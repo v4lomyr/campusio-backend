@@ -17,7 +17,8 @@ const imageMentorRoute = require('./Routes/MentorImage');
 app.use('/mentorimage', imageMentorRoute);
 
 // listening
-app.listen(8080);
+const port = server.listen(process.env.PORT || 8080);
+app.listen(port);
 
 // Connect to DB
 mongoose.connect(process.env.DB_CONNECTION, () =>
