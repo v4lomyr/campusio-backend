@@ -2,6 +2,7 @@ const express = require('express');
 const MentorImageModel = require('../Models/MentorImageModel');
 const router = express.Router();
 const model = require('../Models/MentorImageModel');
+const url = require('url');
 
 router.get('/', async (req, res) => {
   try {
@@ -15,6 +16,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   const newImage = new MentorImageModel({
     image_url: req.body.image_url,
+    image_name: req.body.image_url.split('/').pop(),
   });
 
   try {
