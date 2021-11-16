@@ -19,9 +19,13 @@ function haltOnTimedout(req, res, next) {
 
 // Import Routes
 const imageMentorRoute = require('./Routes/MentorImage');
+const authenticationRoute = require('./Routes/Authentication');
+const authenticatedUserRoute = require('./Routes/AuthenticatedUser');
 
 // Routes
 app.use('/mentorimage', imageMentorRoute);
+app.use('/auth', authenticationRoute);
+app.use('/authenticated', authenticatedUserRoute);
 
 // listening
 app.listen(process.env.PORT || 8080);
