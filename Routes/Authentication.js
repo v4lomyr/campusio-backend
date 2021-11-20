@@ -3,6 +3,9 @@ const UserModel = require('../Models/UserModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+const passport = require('passport');
+const googleVerify = require('./GoogleVerification');
+require('./GoogleStrategyConfig');
 
 router.post('/register', async (req, res) => {
   const emailExist = await UserModel.findOne({ email: req.body.email });
@@ -20,7 +23,7 @@ router.post('/register', async (req, res) => {
     password: hashedPassword,
   });
   try {
-    const savedUser = await user.save();
+    await user.save();
     res.send({ user: user._id });
   } catch (err) {
     res.status(400).send(err);
@@ -38,7 +41,7 @@ router.post('/login', async (req, res) => {
     { nama: user.nama, _id: user._id },
     process.env.TOKEN_SECRET
   );
-  res.header('auth-token', token).send({ token: token });
+  res.send({ token: token });
 });
 
 router.post('/forgetpassword', async (req, res) => {
@@ -94,4 +97,66 @@ router.put('/recovery/:token', async (req, res) => {
   await user.save();
   return res.send({ message: 'ganti password berhasil' });
 });
+
+router.get(
+  '/google',
+  passport.authenticate('google', { scope: ['email', 'profile'] })
+);
+
+router.get(
+  '/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/auth/googleAuthSuccess',
+    failureRedirect: '/auth/googleAuthFailure',
+  })
+);
+
+router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
+  const existedUser = await UserModel.findOne({ email: req.user.email });
+
+  if (!existedUser) {
+    console.log('not found');
+    const randomPassword = (Math.random() + 1).toString(36).substring(7);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(randomPassword, salt);
+
+    const newUser = new UserModel({
+      nama: req.user.displayName,
+      email: req.user.email,
+      nomor_telepon: '0',
+      asal_sekolah: '',
+      password: hashedPassword,
+    });
+    try {
+      await newUser.save();
+      const findUser = await UserModel.findOne({ email: req.user.email });
+      const token = jwt.sign(
+        {
+          nama: findUser.nama,
+          _id: findUser._id,
+        },
+        process.env.TOKEN_SECRET
+      );
+      return res.send({ token: token });
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+  }
+
+  const token = jwt.sign(
+    {
+      nama: existedUser.nama,
+      _id: existedUser._id,
+    },
+    process.env.TOKEN_SECRET
+  );
+  res.send({ token: token });
+});
+
+router.get('/googleAuthFailure', (req, res) => {
+  res
+    .statusCode(400)
+    .send({ message: 'terjadi kesalahan, silahkan coba lagi' });
+});
+
 module.exports = router;

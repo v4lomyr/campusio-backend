@@ -4,6 +4,8 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const timeout = require('connect-timeout');
+const passport = require('passport');
+const session = require('express-session');
 require('dotenv/config');
 
 // Middlewares
@@ -12,6 +14,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(timeout(120000));
 app.use(haltOnTimedout);
+app.use(session({ secret: 'Campusio' }));
+app.use(passport.initialize());
+app.use(passport.session());
 
 function haltOnTimedout(req, res, next) {
   if (!req.timedout) next();
@@ -26,6 +31,10 @@ const authenticatedUserRoute = require('./Routes/AuthenticatedUser');
 app.use('/mentorimage', imageMentorRoute);
 app.use('/auth', authenticationRoute);
 app.use('/authenticated', authenticatedUserRoute);
+
+app.get('/googleAuth', (req, res) => {
+  res.send('<a href="/auth/google">google login</a>');
+});
 
 // listening
 app.listen(process.env.PORT || 8080);
