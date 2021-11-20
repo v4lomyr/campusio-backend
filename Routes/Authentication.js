@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
     { nama: user.nama, _id: user._id },
     process.env.TOKEN_SECRET
   );
-  res.header('auth-token', token).send(token);
+  res.header('auth-token', token).send({ token: token });
 });
 
 router.post('/forgetpassword', async (req, res) => {
