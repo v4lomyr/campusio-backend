@@ -156,7 +156,7 @@ router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
         },
         process.env.TOKEN_SECRET
       );
-      res.redirect('http://localhost:3000/googleLogin/' + token);
+      res.redirect('http://campusioedu.com/googleLogin/' + token);
     } catch (err) {
       return res.status(400).send(err);
     }
@@ -169,7 +169,7 @@ router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
     },
     process.env.TOKEN_SECRET
   );
-  res.redirect('http://localhost:3000/googleLogin/' + token);
+  res.redirect('http://campusioedu.com/googleLogin/' + token);
 });
 
 router.get('/googleAuthFailure', (req, res) => {
