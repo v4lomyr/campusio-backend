@@ -32,10 +32,6 @@ app.use('/mentorimage', imageMentorRoute);
 app.use('/auth', authenticationRoute);
 app.use('/authenticated', authenticatedUserRoute);
 
-app.get('/googleAuth', (req, res) => {
-  res.send('<a href="/auth/google">google login</a>');
-});
-
 // listening
 app.listen(process.env.PORT || 8080);
 
