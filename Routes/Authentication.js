@@ -113,10 +113,14 @@ router.put('/resetpass/:token', async (req, res) => {
   return res.send({ message: 'ganti password berhasil' });
 });
 
-router.get(
-  '/google',
-  passport.authenticate('google', { scope: ['email', 'profile'] })
-);
+router.get('/google', function (req, res, next) {
+  req._toParam = req.query.url;
+  passport.authenticate('google', { scope: ['email', 'profile'] })(
+    req,
+    res,
+    next
+  );
+});
 
 router.get(
   '/google/callback',
@@ -128,7 +132,6 @@ router.get(
 
 router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
   const existedUser = await UserModel.findOne({ email: req.user.email });
-  const url = req.query.url;
 
   if (!existedUser) {
     console.log('not found');
@@ -153,7 +156,7 @@ router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
         },
         process.env.TOKEN_SECRET
       );
-      res.redirect(url + token);
+      res.redirect('http://localhost:3000/googleLogin/' + token);
     } catch (err) {
       return res.status(400).send(err);
     }
@@ -166,7 +169,7 @@ router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
     },
     process.env.TOKEN_SECRET
   );
-  res.redirect(url + token);
+  res.redirect('http://localhost:3000/googleLogin/' + token);
 });
 
 router.get('/googleAuthFailure', (req, res) => {

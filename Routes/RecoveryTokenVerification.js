@@ -7,5 +7,6 @@ module.exports = function (req, res, next) {
       .statusCode(400)
       .send({ message: 'token expired atau tidak ada' });
   }
+  req.user = user;
   res.redirect('/localhost:3000/resetpass/?token=' + req.params.token);
 };

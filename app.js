@@ -32,7 +32,7 @@ app.use('/mentorimage', imageMentorRoute);
 app.use('/auth', authenticationRoute);
 app.use('/authenticated', authenticatedUserRoute);
 app.get('/authgoogle', (req, res) => {
-  res.send('<a href="/auth/google">click here</a>');
+  res.send('<a href="/auth/google?url=adsas">click here</a>');
 });
 
 // listening
