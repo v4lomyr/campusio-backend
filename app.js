@@ -31,6 +31,9 @@ const authenticatedUserRoute = require('./Routes/AuthenticatedUser');
 app.use('/mentorimage', imageMentorRoute);
 app.use('/auth', authenticationRoute);
 app.use('/authenticated', authenticatedUserRoute);
+app.get('/authgoogle', (req, res) => {
+  res.send('<a href="/auth/google">click here</a>');
+});
 
 // listening
 app.listen(process.env.PORT || 8080);

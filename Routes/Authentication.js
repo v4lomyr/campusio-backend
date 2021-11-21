@@ -128,6 +128,7 @@ router.get(
 
 router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
   const existedUser = await UserModel.findOne({ email: req.user.email });
+  const url = req.query.url;
 
   if (!existedUser) {
     console.log('not found');
@@ -152,7 +153,7 @@ router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
         },
         process.env.TOKEN_SECRET
       );
-      return res.send({ token: token });
+      res.redirect(url + token);
     } catch (err) {
       return res.status(400).send(err);
     }
@@ -165,7 +166,7 @@ router.get('/googleAuthSuccess', googleVerify, async (req, res) => {
     },
     process.env.TOKEN_SECRET
   );
-  res.send({ token: token });
+  res.redirect(url + token);
 });
 
 router.get('/googleAuthFailure', (req, res) => {
