@@ -46,12 +46,14 @@ router.post('/login', async (req, res) => {
 
 router.post('/forgetpassword', async (req, res) => {
   const user = await UserModel.findOne({ email: req.body.email });
+  const url = req.body.url;
 
   if (!user) return res.status(400).send({ message: 'Email belum terdaftar' });
 
   const recoveryToken = jwt.sign(
     {
       password: user.password,
+      url: url,
     },
     process.env.TOKEN_SECRET
   );
@@ -82,7 +84,20 @@ router.post('/forgetpassword', async (req, res) => {
     .catch(console.error);
 });
 
-router.put('/recovery/:token', async (req, res) => {
+router.get('/recovery/:token', async (req, res) => {
+  const user = await UserModel.findOne({ recovery_token: req.params.token });
+
+  if (!user) {
+    return res
+      .statusCode(400)
+      .send({ message: 'token expired atau tidak ada' });
+  }
+
+  const token = jwt.decode(req.params.token, { complete: true });
+  res.redirect(token.payload.url + req.params.token);
+});
+
+router.put('/resetpass/:token', async (req, res) => {
   const user = await UserModel.findOne({ recovery_token: req.params.token });
 
   if (!user) {
